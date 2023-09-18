@@ -1,0 +1,23 @@
+.fab-container {
+  position: fixed;
+  bottom: 25px;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 100%;
+  padding: 20px;
+  z-index: 1; /* Asegura que los botones estén por encima del contenido */
+}
+
+.fab-container .fab {
+  border-radius: 100%;
+  font-size: 30px;
+  width: 70px;
+  height: 70px;
+}
+
+.fab-container .fab-danger {
+  font-size: 22px;
+  width: 70px;
+  height: 70px;
+}

@@ -10,10 +10,10 @@ import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
+import { CircularProgress } from "@mui/material";
 
 import useAuthSlice from "../../hooks/useAuthSlice";
 import { useMemo } from "react";
-import { CircularProgress } from "@mui/material";
 
 export const LoginPage = () => {
   const { startCheckingCredentials, isLoading, status } = useAuthSlice();
