@@ -14,17 +14,26 @@ import { CircularProgress } from "@mui/material";
 
 import useAuthSlice from "../../hooks/useAuthSlice";
 import { useMemo } from "react";
+import createValidator from "../../../utils/class-validator-formik";
+import { Formik } from "formik";
+import { LoginDto } from "../../validations/auth.dto";
 
-export const LoginPage = () => {
+const initialValues: LoginDto = {
+  email: "",
+  password: "",
+};
+
+const LoginPage = () => {
+  const validate = createValidator(LoginDto);
+
   const { startCheckingCredentials, isLoading, status } = useAuthSlice();
 
   const handleStartCheckingCredentials = () => {
     startCheckingCredentials();
   };
 
-  const handleSubmit = (e: { preventDefault: () => void }) => {
-    e.preventDefault();
-  };
+  const onSubmit = () => {};
+
   const isAuthenticating = useMemo(
     () => status === "checking" && isLoading === true,
     [status, isLoading]
@@ -34,7 +43,6 @@ export const LoginPage = () => {
     <Container maxWidth="xs">
       <CssBaseline />
       <Box
-        onSubmit={handleSubmit}
         sx={{
           marginTop: 8,
           display: "flex",
@@ -48,61 +56,72 @@ export const LoginPage = () => {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <Box component="form" noValidate sx={{ mt: 1 }}>
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-            autoFocus
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-          />
-          <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
-          />
-          <Button
-            onClick={handleStartCheckingCredentials}
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-            disabled={isAuthenticating}
-          >
-            {isAuthenticating ? (
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                <CircularProgress size={24} sx={{ marginRight: 1 }} />
-                Loading...
-              </Box>
-            ) : (
-              "Sign In"
-            )}
-          </Button>
-          <Grid container>
-            <Grid item xs>
-              <Link href="#" variant="body2">
-                Forgot password?
-              </Link>
-            </Grid>
-            <Grid item>
-              <Link href="#" variant="body2">
-                Don't have an account? Sign Up
-              </Link>
-            </Grid>
-          </Grid>
-        </Box>
+        <Formik
+          enableReinitialize
+          initialValues={initialValues}
+          onSubmit={onSubmit}
+          validate={validate}
+        >
+          {(formik) => (
+            <Box component="form" noValidate sx={{ mt: 1 }}>
+              <TextField
+                autoFocus
+                label="Email"
+                placeholder="johndoe@gmail.com"
+                name="email"
+                onBlur={formik.handleBlur}
+                value={formik.values.email}
+                onChange={formik.handleChange}
+                error={formik.touched.email && Boolean(formik.errors.email)}
+                helperText={formik.touched.email && formik.errors.email}
+              />
+              <TextField
+                label="Contraseña"
+                name="password"
+                type="password"
+                placeholder="********"
+                value={formik.values.password}
+                onBlur={formik.handleBlur}
+                onChange={formik.handleChange}
+                error={
+                  formik.touched.password && Boolean(formik.errors.password)
+                }
+                helperText={formik.touched.password && formik.errors.password}
+              />
+              <FormControlLabel
+                control={<Checkbox value="remember" color="primary" />}
+                label="Remember me"
+              />
+              <Button
+                sx={{ mt: 3, mb: 2 }}
+                fullWidth
+                variant="contained"
+                type="submit"
+                onClick={handleStartCheckingCredentials}
+                disabled={isAuthenticating}
+              >
+                {isAuthenticating ? (
+                  <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <CircularProgress size={24} sx={{ marginRight: 1 }} />
+                    Loading...
+                  </Box>
+                ) : (
+                  "Sign In"
+                )}
+              </Button>
+              <Grid container>
+                <Grid item xs>
+                  <Link href="#" variant="body2">
+                    Forgot password?
+                  </Link>
+                </Grid>
+                <Grid item>
+                  <Link variant="body2">Don't have an account? Sign Up</Link>
+                </Grid>
+              </Grid>
+            </Box>
+          )}
+        </Formik>
       </Box>
     </Container>
   );

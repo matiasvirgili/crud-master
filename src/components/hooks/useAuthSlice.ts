@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { onChecking } from "../../store/login/AuthSlice";
+import { onChecking } from "../../store/auth/AuthSlice";
 import { RootState } from "../../store/store";
 
 const useAuthSlice = () => {
