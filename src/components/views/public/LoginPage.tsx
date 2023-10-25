@@ -10,13 +10,14 @@ import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { CircularProgress } from "@mui/material";
+import { Alert, CircularProgress } from "@mui/material";
 
 import useAuthSlice from "../../hooks/useAuthSlice";
 import { useMemo } from "react";
 import createValidator from "../../../utils/class-validator-formik";
 import { Formik } from "formik";
 import { LoginDto } from "../../validations/auth.dto";
+import { Elinks } from "../../routes/links";
 
 const initialValues: LoginDto = {
   email: "",
@@ -26,18 +27,21 @@ const initialValues: LoginDto = {
 const LoginPage = () => {
   const validate = createValidator(LoginDto);
 
-  const { startCheckingCredentials, isLoading, status } = useAuthSlice();
+  const { startLogin, isLoading, status, errorMessage, startDeleteErrorAuth } =
+    useAuthSlice();
 
-  const handleStartCheckingCredentials = () => {
-    startCheckingCredentials();
+  const onSubmit = (values: LoginDto) => {
+    startLogin(values);
   };
-
-  const onSubmit = () => {};
 
   const isAuthenticating = useMemo(
     () => status === "checking" && isLoading === true,
     [status, isLoading]
   );
+
+  const deleteErrorMessaje = () => {
+    startDeleteErrorAuth();
+  };
 
   return (
     <Container maxWidth="xs">
@@ -54,7 +58,7 @@ const LoginPage = () => {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Sign in
+          Inicio de sesión
         </Typography>
         <Formik
           enableReinitialize
@@ -63,60 +67,76 @@ const LoginPage = () => {
           validate={validate}
         >
           {(formik) => (
-            <Box component="form" noValidate sx={{ mt: 1 }}>
-              <TextField
-                autoFocus
-                label="Email"
-                placeholder="johndoe@gmail.com"
-                name="email"
-                onBlur={formik.handleBlur}
-                value={formik.values.email}
-                onChange={formik.handleChange}
-                error={formik.touched.email && Boolean(formik.errors.email)}
-                helperText={formik.touched.email && formik.errors.email}
-              />
-              <TextField
-                label="Contraseña"
-                name="password"
-                type="password"
-                placeholder="********"
-                value={formik.values.password}
-                onBlur={formik.handleBlur}
-                onChange={formik.handleChange}
-                error={
-                  formik.touched.password && Boolean(formik.errors.password)
-                }
-                helperText={formik.touched.password && formik.errors.password}
-              />
+            <Box sx={{ mt: 1, width: "100%" }}>
+              <Box
+                sx={{ display: "flex", flexDirection: "column", width: "100%" }}
+              >
+                <TextField
+                  autoFocus
+                  label="Email"
+                  placeholder="johndoe@gmail.com"
+                  name="email"
+                  onBlur={formik.handleBlur}
+                  value={formik.values.email}
+                  error={formik.touched.email && Boolean(formik.errors.email)}
+                  helperText={formik.touched.email && formik.errors.email}
+                  onChange={(e) => {
+                    formik.handleChange(e);
+                    deleteErrorMessaje();
+                  }}
+                />
+                <TextField
+                  margin="normal"
+                  label="Contraseña"
+                  name="password"
+                  type="password"
+                  placeholder="********"
+                  value={formik.values.password}
+                  onBlur={formik.handleBlur}
+                  error={
+                    formik.touched.password && Boolean(formik.errors.password)
+                  }
+                  helperText={formik.touched.password && formik.errors.password}
+                  onChange={(e) => {
+                    formik.handleChange(e);
+                    deleteErrorMessaje();
+                  }}
+                />
+              </Box>
               <FormControlLabel
                 control={<Checkbox value="remember" color="primary" />}
-                label="Remember me"
+                label="Recordarme"
               />
               <Button
                 sx={{ mt: 3, mb: 2 }}
                 fullWidth
                 variant="contained"
                 type="submit"
-                onClick={handleStartCheckingCredentials}
                 disabled={isAuthenticating}
+                onClick={() => formik.handleSubmit()}
               >
                 {isAuthenticating ? (
                   <Box sx={{ display: "flex", alignItems: "center" }}>
                     <CircularProgress size={24} sx={{ marginRight: 1 }} />
-                    Loading...
+                    Cargando...
                   </Box>
                 ) : (
-                  "Sign In"
+                  "Ingresar"
                 )}
               </Button>
+              {errorMessage && (
+                <Alert severity="error"> Credenciales incorrectas</Alert>
+              )}
               <Grid container>
-                <Grid item xs>
+                <Grid item sx={{ mr: 1 }}>
                   <Link href="#" variant="body2">
-                    Forgot password?
+                    Olvidaste tu Contraseña?
                   </Link>
                 </Grid>
                 <Grid item>
-                  <Link variant="body2">Don't have an account? Sign Up</Link>
+                  <Link href={Elinks.register} variant="body2">
+                    No tenés cuenta? Registrate
+                  </Link>
                 </Grid>
               </Grid>
             </Box>

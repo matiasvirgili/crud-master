@@ -6,11 +6,13 @@ import ListItemText from "@mui/material/ListItemText";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
-import React from "react";
+import React, { useContext } from "react";
 import FabAddNew from "../../shared/FabAddNew";
 import FabDelete from "../../shared/FabDelete";
+import { AuthContext } from "../../../context/auth.context";
 
 const EventsPage = () => {
+  const { setCredentials } = useContext(AuthContext);
   return (
     <div>
       <NavBar></NavBar>
